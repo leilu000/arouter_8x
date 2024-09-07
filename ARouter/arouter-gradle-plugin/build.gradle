@@ -1,0 +1,33 @@
+plugins {
+    id("groovy")
+    id("kotlin")
+    id("maven-publish")
+}
+
+
+
+dependencies {
+    compileOnly gradleApi()
+    compileOnly localGroovy()
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'commons-io:commons-io:2.11.0'
+    compileOnly 'com.android.tools.build:gradle:7.4.2'
+}
+
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+            groupId "com.hsbc.lab.arouter"
+            artifactId "plugin"
+            version "1.0.0"
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("$rootDir/localMaven")
+        }
+    }
+}

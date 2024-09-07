@@ -1,0 +1,38 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    implementation("com.hsbc.lab.arouter:annotation:1.0.0")
+    implementation("com.hsbc.lab.arouter:api:1.0.0")
+    annotationProcessor("com.hsbc.lab.arouter:processor:1.0.0")
+    implementation "com.android.support:appcompat-v7:${SUPPORT_LIB_VERSION}"
+    implementation 'com.alibaba:fastjson:1.2.48'
+}
+android {
+    compileSdk = Integer.parseInt(COMPILE_SDK_VERSION)
+    namespace = "com.arouter.module.java.export"
+    defaultConfig {
+        minSdkVersion Integer.parseInt(MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+    }
+
+}

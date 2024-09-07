@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'kotlin-android'
+android {
+    compileSdkVersion Integer.parseInt(COMPILE_SDK_VERSION)
+    buildToolsVersion BUILDTOOLS_VERSION
+    namespace = "com.arouter.api"
+    defaultConfig {
+        minSdkVersion Integer.parseInt(MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+        }
+
+    }
+}
+
+dependencies {
+    annotationProcessor 'com.alibaba:arouter-compiler:1.5.2'
+    implementation("com.hsbc.lab.arouter:annotation:1.0.0")
+    implementation "com.android.support:support-v4:${SUPPORT_LIB_VERSION}"
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId "com.hsbc.lab.arouter"
+                artifactId "api"
+                version "1.0.0"
+
+            }
+        }
+
+        repositories {
+            maven {
+                url = uri("$rootDir/localMaven")
+            }
+        }
+    }
+
+}

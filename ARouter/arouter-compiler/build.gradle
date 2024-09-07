@@ -1,0 +1,49 @@
+plugins {
+    id("kotlin")
+    id("kotlin-kapt")
+}
+
+
+compileJava {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+dependencies {
+    implementation("com.hsbc.lab.arouter:annotation:1.0.0")
+
+    implementation 'com.google.auto.service:auto-service-annotations:1.0-rc7'
+    kapt("com.google.auto.service:auto-service:1.0-rc7")
+
+    implementation 'com.squareup:javapoet:1.8.0'
+
+    implementation 'org.apache.commons:commons-lang3:3.5'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+
+    implementation 'com.alibaba:fastjson:1.2.69'
+}
+
+apply from: rootProject.file('gradle/publish.gradle')
+
+apply plugin: "maven-publish"
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+            groupId "com.hsbc.lab.arouter"
+            artifactId "processor"
+            version "1.0.0"
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("$rootDir/localMaven")
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
