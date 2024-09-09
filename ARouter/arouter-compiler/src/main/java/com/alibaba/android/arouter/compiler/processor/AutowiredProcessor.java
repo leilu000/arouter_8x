@@ -1,6 +1,16 @@
 package com.alibaba.android.arouter.compiler.processor;
 
+import static com.alibaba.android.arouter.compiler.utils.Consts.ANNOTATION_TYPE_AUTOWIRED;
+import static com.alibaba.android.arouter.compiler.utils.Consts.ISYRINGE;
+import static com.alibaba.android.arouter.compiler.utils.Consts.JSON_SERVICE;
+import static com.alibaba.android.arouter.compiler.utils.Consts.METHOD_INJECT;
+import static com.alibaba.android.arouter.compiler.utils.Consts.NAME_OF_AUTOWIRED;
+import static com.alibaba.android.arouter.compiler.utils.Consts.TYPE_WRAPPER;
+import static com.alibaba.android.arouter.compiler.utils.Consts.WARNING_TIPS;
+import static javax.lang.model.element.Modifier.PUBLIC;
+
 import com.alibaba.android.arouter.compiler.utils.Consts;
+import com.alibaba.android.arouter.compiler.utils.FileUtils;
 import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.facade.enums.TypeKind;
 import com.google.auto.service.AutoService;
@@ -28,17 +38,11 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-
-import static com.alibaba.android.arouter.compiler.utils.Consts.*;
-import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * Processor used to create autowired helper
@@ -195,7 +199,9 @@ public class AutowiredProcessor extends BaseProcessor {
                 // Generate autowire helper
                 JavaFile.builder(packageName, helper.build()).build().writeTo(mFiler);
 
-                logger.info(">>> " + parent.getSimpleName() + " has been processed, " + fileName + " has been generated. <<<");
+                FileUtils.writeFile(packageName + "." + fileName, configPath);
+
+                logger.info(">>> Autowired " + parent.getSimpleName() + " has been processed, " + fileName + " has been generated. <<<");
             }
 
             logger.info(">>> Autowired processor stop. <<<");

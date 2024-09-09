@@ -1,6 +1,7 @@
 package com.alibaba.android.arouter.compiler.processor;
 
 import com.alibaba.android.arouter.compiler.utils.Consts;
+import com.alibaba.android.arouter.compiler.utils.FileUtils;
 import com.alibaba.android.arouter.facade.annotation.Interceptor;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
@@ -13,6 +14,7 @@ import com.squareup.javapoet.WildcardTypeName;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -87,6 +89,7 @@ public class InterceptorProcessor extends BaseProcessor {
      */
     private void parseInterceptors(Set<? extends Element> elements) throws IOException {
         if (CollectionUtils.isNotEmpty(elements)) {
+
             logger.info(">>> Found interceptors, size is " + elements.size() + " <<<");
 
             // Verify and cache, sort incidentally.
@@ -147,15 +150,18 @@ public class InterceptorProcessor extends BaseProcessor {
                 }
             }
 
+            String className = NAME_OF_INTERCEPTOR + SEPARATOR + moduleName;
             // Write to disk(Write file even interceptors is empty.)
             JavaFile.builder(PACKAGE_OF_GENERATE_FILE,
-                    TypeSpec.classBuilder(NAME_OF_INTERCEPTOR + SEPARATOR + moduleName)
+                    TypeSpec.classBuilder(className)
                             .addModifiers(PUBLIC)
                             .addJavadoc(WARNING_TIPS)
                             .addMethod(loadIntoMethodOfTollgateBuilder.build())
                             .addSuperinterface(ClassName.get(type_IInterceptorGroup))
                             .build()
             ).build().writeTo(mFiler);
+
+            FileUtils.writeFile(PACKAGE_OF_GENERATE_FILE + "." + className, configPath);
 
             logger.info(">>> Interceptor group write over. <<<");
         }

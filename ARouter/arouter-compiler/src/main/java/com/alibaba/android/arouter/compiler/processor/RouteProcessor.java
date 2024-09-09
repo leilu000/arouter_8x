@@ -2,6 +2,7 @@ package com.alibaba.android.arouter.compiler.processor;
 
 import com.alibaba.android.arouter.compiler.entity.RouteDoc;
 import com.alibaba.android.arouter.compiler.utils.Consts;
+import com.alibaba.android.arouter.compiler.utils.FileUtils;
 import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.alibaba.android.arouter.facade.enums.RouteType;
@@ -22,6 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import static com.alibaba.android.arouter.compiler.utils.Consts.ACTIVITY;
@@ -77,10 +80,10 @@ public class RouteProcessor extends BaseProcessor {
     private TypeMirror iProvider = null;
     private Writer docWriter;       // Writer used for write doc
 
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-
         if (generateDoc) {
             try {
                 docWriter = mFiler.createResource(
@@ -126,6 +129,8 @@ public class RouteProcessor extends BaseProcessor {
 
     private void parseRoutes(Set<? extends Element> routeElements) throws IOException {
         if (CollectionUtils.isNotEmpty(routeElements)) {
+            StringBuilder generatedClassString = new StringBuilder();
+
             // prepare the type an so on.
 
             logger.info(">>> Found routes, size is " + routeElements.size() + " <<<");
@@ -329,6 +334,8 @@ public class RouteProcessor extends BaseProcessor {
                                 .build()
                 ).build().writeTo(mFiler);
 
+                generatedClassString.append(PACKAGE_OF_GENERATE_FILE).append(".").append(groupFileName).append("\n");
+
                 logger.info(">>> Generated group: " + groupName + "<<<");
                 rootMap.put(groupName, groupFileName);
                 docSource.put(groupName, routeDocList);
@@ -359,6 +366,8 @@ public class RouteProcessor extends BaseProcessor {
                             .build()
             ).build().writeTo(mFiler);
 
+            generatedClassString.append(PACKAGE_OF_GENERATE_FILE).append(".").append(providerMapFileName).append("\n");
+
             logger.info(">>> Generated provider map, name is " + providerMapFileName + " <<<");
 
             // Write root meta into disk.
@@ -372,7 +381,10 @@ public class RouteProcessor extends BaseProcessor {
                             .build()
             ).build().writeTo(mFiler);
 
+            generatedClassString.append(PACKAGE_OF_GENERATE_FILE).append(".").append(rootFileName).append("\n");
+
             logger.info(">>> Generated root, name is " + rootFileName + " <<<");
+            FileUtils.writeFile(generatedClassString.toString(), configPath);
         }
     }
 

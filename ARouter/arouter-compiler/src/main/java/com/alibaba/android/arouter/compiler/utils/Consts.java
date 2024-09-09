@@ -74,6 +74,8 @@ public class Consts {
 
     // Options of processor
     public static final String KEY_MODULE_NAME = "AROUTER_MODULE_NAME";
+
+    public static final String KEY_ROOT_DIR = "ROOT_DIR";
     public static final String KEY_GENERATE_DOC_NAME = "AROUTER_GENERATE_DOC";
 
     public static final String VALUE_ENABLE = "enable";
