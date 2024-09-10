@@ -10,6 +10,7 @@ import java.io.File
 class ScanSetting {
 
     companion object {
+
         const val PLUGIN_NAME = "com.alibaba.arouter"
 
         /**

@@ -6,6 +6,7 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import java.io.File
+import java.io.InputStream
 
 /**
  * @author: created by leilu
@@ -13,9 +14,12 @@ import java.io.File
  *
  */
 object HelloWorldClassVisitor {
-
     fun modify(file: File): ByteArray {
-        val cr = ClassReader(file.inputStream())
+        return modify(file.inputStream())
+    }
+
+    fun modify(inputStream: InputStream): ByteArray {
+        val cr = ClassReader(inputStream)
         val cw = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
         val cv = object : ClassVisitor(Opcodes.ASM9, cw) {
 
@@ -27,6 +31,7 @@ object HelloWorldClassVisitor {
                 exceptions: Array<out String>?
             ): MethodVisitor {
                 val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
+                println("------method name:$name")
                 if (name == "onCreate") {
                     println("ooooooooooooooooooooooooooooooo")
 

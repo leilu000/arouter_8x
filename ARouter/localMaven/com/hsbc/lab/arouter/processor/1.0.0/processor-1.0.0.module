@@ -38,11 +38,11 @@
         {
           "name": "processor-1.0.0.jar",
           "url": "processor-1.0.0.jar",
-          "size": 37265,
-          "sha512": "9925baa081270f735544114dc2ea8e8f3bd6cf50e1354fcecf69dded7c961eac9d71eb7eb5d80f7b2359650c64e05a5a8339dec9fc413021ed1692b8ea973349",
-          "sha256": "acfa4f9ae9d4c13ef6e60a4d4d8d80cfa858668ffbc873af04c723ad2dbd65b5",
-          "sha1": "597dfc03597a95cdafa09afbcc8b030155b9f088",
-          "md5": "558e74a4aabdbd070cb33a767ef18848"
+          "size": 37355,
+          "sha512": "a9c93354d79cf184acfee8f00e7c43237986f8b9bf18411d3ccb3ce30f5c7ff554fc33270054afb2bb5d2ee8d2edd379ee61a916d0a8b34288d147895887630d",
+          "sha256": "a9a148d64b184357a110d42e864cb7648c0335c33a001694d1f2f3a10362bdd8",
+          "sha1": "07fca7a8051c3201dd193cc0d464bb6863e35f6b",
+          "md5": "b2105030099e8062d2020fbabb95718f"
         }
       ]
     },
@@ -112,11 +112,11 @@
         {
           "name": "processor-1.0.0.jar",
           "url": "processor-1.0.0.jar",
-          "size": 37265,
-          "sha512": "9925baa081270f735544114dc2ea8e8f3bd6cf50e1354fcecf69dded7c961eac9d71eb7eb5d80f7b2359650c64e05a5a8339dec9fc413021ed1692b8ea973349",
-          "sha256": "acfa4f9ae9d4c13ef6e60a4d4d8d80cfa858668ffbc873af04c723ad2dbd65b5",
-          "sha1": "597dfc03597a95cdafa09afbcc8b030155b9f088",
-          "md5": "558e74a4aabdbd070cb33a767ef18848"
+          "size": 37355,
+          "sha512": "a9c93354d79cf184acfee8f00e7c43237986f8b9bf18411d3ccb3ce30f5c7ff554fc33270054afb2bb5d2ee8d2edd379ee61a916d0a8b34288d147895887630d",
+          "sha256": "a9a148d64b184357a110d42e864cb7648c0335c33a001694d1f2f3a10362bdd8",
+          "sha1": "07fca7a8051c3201dd193cc0d464bb6863e35f6b",
+          "md5": "b2105030099e8062d2020fbabb95718f"
         }
       ]
     }

@@ -381,7 +381,13 @@ public class RouteProcessor extends BaseProcessor {
                             .build()
             ).build().writeTo(mFiler);
 
-            generatedClassString.append(PACKAGE_OF_GENERATE_FILE).append(".").append(rootFileName).append("\n");
+            generatedClassString
+                    .append(PACKAGE_OF_GENERATE_FILE)
+                    .append(".")
+                    .append(rootFileName)
+                    .append(":")
+                    .append(ITROUTE_ROOT.substring(ITROUTE_ROOT.lastIndexOf(".") + 1))
+                    .append("\n");
 
             logger.info(">>> Generated root, name is " + rootFileName + " <<<");
             FileUtils.writeFile(generatedClassString.toString(), configPath);

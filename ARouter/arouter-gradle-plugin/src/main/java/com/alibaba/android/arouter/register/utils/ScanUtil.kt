@@ -1,5 +1,6 @@
 package com.alibaba.android.arouter.register.utils
 
+import com.alibaba.android.arouter.register.core.RegisterCodeGenerator
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
@@ -14,13 +15,60 @@ import java.util.jar.JarFile
  * email: lu.lei@hsbc.com
  *
  */
-object ScanUtil {
 
+data class ScanInfo(val interfaceName: String? = null, val className: String)
+
+object ScanUtil {
     var registerList = ArrayList<ScanSetting>().apply {
         add(ScanSetting("IRouteRoot"))
         add(ScanSetting("IInterceptorGroup"))
         add(ScanSetting("IProviderGroup"))
     }
+
+    fun logisticsCenter(rootDirPath: String, inputStream: InputStream): ByteArray {
+        val generateConfigDir =
+            File("$rootDirPath${File.separator}.gradle${File.separator}arouter_temp")
+        val scanInfoList = mutableListOf<ScanInfo>()
+        if (generateConfigDir.exists()) {
+            generateConfigDir.walk().forEach {
+                if (it.isFile) {
+                    val lines = it.readText().split("\n")
+                    lines.forEach { line ->
+                        val array = line.replace("\n", "").split(":")
+                        if (array.size == 2) {
+                            scanInfoList.add(
+                                ScanInfo(
+                                    interfaceName = array[1], className = array[0]
+                                )
+                            )
+                        } else {
+                            scanInfoList.add(
+                                ScanInfo(
+                                    interfaceName = null, className = array[0]
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        registerList.forEach { scanSetting ->
+            scanInfoList.forEach { scanInfo ->
+                if (scanInfo.interfaceName != null && scanSetting.interfaceName.endsWith(scanInfo.interfaceName)) {
+                    if (!scanSetting.classList.contains(scanInfo.className)) {
+                        scanSetting.classList.add(scanInfo.className)
+                    }
+                }
+            }
+        }
+        var classByteArray = inputStream.readAllBytes()
+        registerList.forEach { scanSetting ->
+            classByteArray = RegisterCodeGenerator.referHackWhenInit(classByteArray, scanSetting)
+        }
+        return classByteArray
+    }
+
 
     fun shouldProcessPreDexJar(path: String): Boolean {
         return !path.contains("com.android.support") && !path.contains("/android/m2repository")

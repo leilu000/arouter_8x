@@ -151,17 +151,19 @@ public class InterceptorProcessor extends BaseProcessor {
             }
 
             String className = NAME_OF_INTERCEPTOR + SEPARATOR + moduleName;
+            ClassName interfaceClassName = ClassName.get(type_IInterceptorGroup);
             // Write to disk(Write file even interceptors is empty.)
             JavaFile.builder(PACKAGE_OF_GENERATE_FILE,
                     TypeSpec.classBuilder(className)
                             .addModifiers(PUBLIC)
                             .addJavadoc(WARNING_TIPS)
                             .addMethod(loadIntoMethodOfTollgateBuilder.build())
-                            .addSuperinterface(ClassName.get(type_IInterceptorGroup))
-                            .build()
-            ).build().writeTo(mFiler);
+                            .addSuperinterface(interfaceClassName)
+                            .build());
 
-            FileUtils.writeFile(PACKAGE_OF_GENERATE_FILE + "." + className, configPath);
+            String interfaceClass = interfaceClassName.simpleName();
+
+            FileUtils.writeFile(PACKAGE_OF_GENERATE_FILE + "." + className + ":" + interfaceClass, configPath);
 
             logger.info(">>> Interceptor group write over. <<<");
         }

@@ -21,15 +21,13 @@ import java.util.zip.ZipEntry
  * email: lu.lei@hsbc.com
  *
  */
-class RegisterCodeGenerator(private val extension: ScanSetting) {
+object RegisterCodeGenerator {
 
-    companion object {
-        fun insertInitCodeTo(registerSetting: ScanSetting, logisticsCenterClassFile: File?) {
-            if (registerSetting.classList.isNotEmpty()) {
-                val processor = RegisterCodeGenerator(registerSetting)
-                if (logisticsCenterClassFile?.name?.endsWith(".jar") == true) {
-                    processor.insertInitCodeIntoJarFile(logisticsCenterClassFile)
-                }
+
+    fun insertInitCodeTo(registerSetting: ScanSetting, logisticsCenterClassFile: File?) {
+        if (registerSetting.classList.isNotEmpty()) {
+            if (logisticsCenterClassFile?.name?.endsWith(".jar") == true) {
+                insertInitCodeIntoJarFile(logisticsCenterClassFile, registerSetting)
             }
         }
     }
@@ -39,7 +37,7 @@ class RegisterCodeGenerator(private val extension: ScanSetting) {
      * @param jarFile the jar file which contains LogisticsCenter.class
      * @return
      */
-    private fun insertInitCodeIntoJarFile(jarFile: File): File {
+    private fun insertInitCodeIntoJarFile(jarFile: File, registerSetting: ScanSetting): File {
         val optJar = File(jarFile.parent, jarFile.name + ".opt")
         if (optJar.exists()) optJar.delete()
         val file = JarFile(jarFile)
@@ -56,7 +54,7 @@ class RegisterCodeGenerator(private val extension: ScanSetting) {
 
                 Logger.i("Insert init code to class >> $entryName")
 
-                val bytes = referHackWhenInit(inputStream)
+                val bytes = referHackWhenInit(inputStream, registerSetting)
                 jarOutputStream.write(bytes)
             } else {
                 jarOutputStream.write(IOUtils.toByteArray(inputStream))
@@ -75,10 +73,14 @@ class RegisterCodeGenerator(private val extension: ScanSetting) {
     }
 
     //refer hack class when object init
-    private fun referHackWhenInit(inputStream: InputStream): ByteArray {
-        val cr = ClassReader(inputStream)
+    fun referHackWhenInit(inputStream: InputStream, scanSetting: ScanSetting): ByteArray {
+        return referHackWhenInit(inputStream.readAllBytes(), scanSetting)
+    }
+
+    fun referHackWhenInit(classByte: ByteArray, scanSetting: ScanSetting): ByteArray {
+        val cr = ClassReader(classByte)
         val cw = ClassWriter(cr, 0)
-        val cv = MyClassVisitor(Opcodes.ASM7, cw, extension)
+        val cv = MyClassVisitor(Opcodes.ASM7, cw, scanSetting)
         cr.accept(cv, ClassReader.EXPAND_FRAMES)
         return cw.toByteArray()
     }
