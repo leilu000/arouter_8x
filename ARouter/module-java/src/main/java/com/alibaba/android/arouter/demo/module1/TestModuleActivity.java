@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.arouter.module.java.R;
 
-@Route(path = "/module_java/1")
+@Route(path = "/module_java/11")
 public class TestModuleActivity extends Activity {
 
     @Override
