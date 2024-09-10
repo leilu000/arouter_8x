@@ -15,10 +15,13 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.BufferedOutputStream
+import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -39,6 +42,9 @@ abstract class ArouterASMTask : DefaultTask() {
     @get:OutputFile
     abstract val output: RegularFileProperty
 
+    @Internal
+    val jarPaths = mutableSetOf<String>()
+
     @TaskAction
     fun taskAction() {
         val outputJarFile = output.asFile.get()
@@ -49,15 +55,7 @@ abstract class ArouterASMTask : DefaultTask() {
             val jarFile = JarFile(file.asFile)
             ScanUtil.scanJar(file.asFile)
             jarFile.entries().iterator().forEach { jarEntry ->
-                try {
-                    jarOutput.putNextEntry(JarEntry(jarEntry.name))
-                    jarFile.getInputStream(jarEntry).use {
-                        it.copyTo(jarOutput)
-                    }
-                } catch (_: Exception) {
-                } finally {
-                    jarOutput.closeEntry()
-                }
+                jarOutput.writeEntity(jarEntry.name, jarFile.getInputStream(jarEntry))
             }
             jarFile.close()
         }
@@ -68,15 +66,11 @@ abstract class ArouterASMTask : DefaultTask() {
                     if (ScanUtil.shouldProcessClass(path)) {
                         ScanUtil.scanClass(file.inputStream(), file.absolutePath)
                     }
-                    try {
-                        jarOutput.putNextEntry(JarEntry(file.name))
-                        file.inputStream().use {
-                            it.copyTo(jarOutput)
-                        }
-                    } catch (_: Exception) {
-                    } finally {
-                        jarOutput.closeEntry()
-                    }
+                    val relativePath = directory.asFile.toURI().relativize(file.toURI()).getPath()
+                    jarOutput.writeEntity(
+                        relativePath.replace(File.separatorChar, '/'),
+                        file.inputStream()
+                    )
 
                 }
             }
@@ -93,6 +87,16 @@ abstract class ArouterASMTask : DefaultTask() {
             }
         }
     }
+
+    private fun JarOutputStream.writeEntity(name: String, inputStream: InputStream) {
+        if (!jarPaths.contains(name)) {
+            putNextEntry(JarEntry(name))
+            inputStream.copyTo(this)
+            closeEntry()
+            jarPaths.add(name)
+        }
+    }
+
 }
 
 class ArouterASMPlugin : Plugin<Project> {
